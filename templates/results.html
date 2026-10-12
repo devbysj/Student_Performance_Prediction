@@ -1,0 +1,136 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Diagnostic Report Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-50 font-sans min-h-screen antialiased">
+
+    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white pt-12 pb-28 px-8 text-center shadow-md relative">
+        <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Diagnostic Evaluation Assessment Report</h1>
+        <p class="text-indigo-200 text-sm mt-2">Analytical insights compiled dynamically using active Random Forest decision-tree regressions.</p>
+    </div>
+
+    <div class="max-w-4xl mx-auto -mt-16 px-4 pb-16 space-y-6">
+        
+        <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-100 grid grid-cols-1 md:grid-cols-12 gap-6">
+            <div class="md:col-span-5 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-100 pb-6 md:pb-0 md:pr-6">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 text-center">Predicted Grade</h3>
+                <div class="relative w-40 h-40">
+                    <canvas id="gaugeChart"></canvas>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center mt-4">
+                        <span class="text-3xl font-black text-slate-800">{{ data.score }}%</span>
+                        <span class="text-[10px] uppercase tracking-wider font-bold text-indigo-500">Grade Index</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="md:col-span-7 flex flex-col justify-center space-y-4">
+                <div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block">Status Assessment</span>
+                    <span class="text-xl font-extrabold tracking-tight mt-0.5 block
+                        {% if 'Risk' in data.status %} text-rose-600 {% elif 'Moderate' in data.status %} text-amber-500 {% else %} text-emerald-600 {% endif %}">
+                        {{ data.status }}
+                    </span>
+                </div>
+                <div class="p-4 rounded-xl border text-xs leading-relaxed {% if 'Risk' in data.status %} bg-rose-50 border-rose-100 text-rose-800 {% elif 'Moderate' in data.status %} bg-amber-50 border-amber-100 text-amber-800 {% else %} bg-emerald-50 border-emerald-100 text-emerald-800 {% endif %}">
+                    <strong>Classification Summary:</strong> 
+                    {% if 'Risk' in data.status %}
+                        Critical baseline constraints detected within lifestyle variables. Structural remediation recommended.
+                    {% elif 'Moderate' in data.status %}
+                        Steady performance array, but optimization buffers remain accessible to yield higher outputs.
+                    {% else %}
+                        Exemplary academic distribution array. Maintain current profile constraints.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Calculated Metric Profile Breakdown</h3>
+            <div class="w-full h-64">
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+
+        <div class="bg-slate-900 text-white p-6 rounded-2xl shadow-xl border border-slate-800">
+            <div class="flex items-center space-x-2 border-b border-slate-800 pb-3 mb-4">
+                <span class="text-base">💡</span>
+                <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-300">Automated AI Consultative Insights</h3>
+            </div>
+            <ul class="space-y-3">
+                {% for advisory in data.advisories %}
+                <li class="text-xs text-slate-300 flex items-start space-x-2.5">
+                    <span class="text-indigo-400 font-bold">•</span>
+                    <span>{{ advisory }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="text-center pt-2">
+            <a href="/dashboard" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-2.5 rounded-xl shadow-md transition text-xs uppercase tracking-wider">Execute New Metric Analysis</a>
+        </div>
+    </div>
+
+    <script>
+        // 1. GAUGE DISPLAY
+        const ctxGauge = document.getElementById('gaugeChart').getContext('2d');
+        const scoreVal = Number("{{ data.score }}");
+        new Chart(ctxGauge, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [scoreVal, 100 - scoreVal],
+                    backgroundColor: ['#4f46e5', '#f1f5f9'],
+                    borderWidth: 0,
+                    borderRadius: [10, 0]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '82%',
+                rotation: -90,
+                circumference: 180,
+                plugins: { tooltip: { enabled: false }, legend: { display: false } }
+            }
+        });
+
+        // 2. MODERN HORIZONTAL BAR CHART CONSTRUCTOR
+        const ctxBar = document.getElementById('barChart').getContext('2d');
+        new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: ['Attendance (%)', 'Study Intensity Index', 'Prior Grades (%)', 'Rest Index', 'Media Distraction Index'],
+                datasets: [{
+                    label: 'User Metric Profile Attributes',
+                    data: JSON.parse('{{ data.metrics | tojson | safe }}'),
+                    backgroundColor: '#4f46e5',
+                    borderRadius: 6,
+                    barThickness: 12
+                }, {
+                    label: 'Target Benchmark Baseline',
+                    data: [85, 45, 75, 75, 30],
+                    backgroundColor: '#e2e8f0',
+                    borderRadius: 6,
+                    barThickness: 12
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y', // Renders bars horizontally
+                scales: {
+                    x: { min: 0, max: 100, grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 } } },
+                    y: { grid: { display: false }, ticks: { font: { size: 11, weight: 'bold' }, color: '#64748b' } }
+                },
+                plugins: { legend: { position: 'top', labels: { font: { size: 11 } } } }
+            }
+        });
+    </script>
+</body>
+</html>
